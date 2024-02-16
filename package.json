@@ -1,0 +1,36 @@
+{
+  "name": "express-mongo-boilerplate",
+  "version": "1.0.9",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ahmmedabir9/express-rest-boilerplate.git"
+  },
+  "description": "A Minimal Starter Boilerplate for NodeJS REST API with ExpressJS & MongoDB.",
+  "bin": "./bin/cli.js",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@azure/storage-blob": "^12.11.0",
+    "bcrypt": "^5.0.1",
+    "body-parser": "^1.20.0",
+    "cors": "^2.8.5",
+    "express": "^4.18.1",
+    "express-fileupload": "^1.4.0",
+    "figlet": "^1.5.2",
+    "http-status-codes": "^2.2.0",
+    "joi": "^17.6.1",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.5.4",
+    "uuid": "^8.3.2",
+    "validator": "^13.7.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.19"
+  }
+}
