@@ -1,6 +1,6 @@
 const { connect } = require("mongoose");
 
-const dbConnectionString = "";
+const dbConnectionString = "mongodb://localhost:27017/medical";
 
 connect(dbConnectionString, {
  useNewUrlParser: true,

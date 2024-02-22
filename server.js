@@ -2,14 +2,14 @@ require("./src/config/conn");
 const express = require("express");
 const cors = require("cors");
 const fileUpload = require("express-fileupload");
-const { connect } = require("mongoose");
 const bodyParser = require("body-parser");
 const path = require("path");
 
 const app = express();
-
 app.use(fileUpload());
-app.use(cors());
+app.use(cors({
+    origin: "*"
+}));
 
 app.use(express.static(path.join(__dirname, "/uploads")));
 app.use(bodyParser.urlencoded({ extended: false }));

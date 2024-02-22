@@ -11,10 +11,7 @@ const createToken = (user) => {
   return sign(
     {
       _id: user._id,
-      email: user.email,
-      photo: user.photo,
-      name: user.name,
-      userType: user.userType,
+      username: user.username,
     },
     config.secrets.jwt,
     {
