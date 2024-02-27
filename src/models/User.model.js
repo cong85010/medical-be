@@ -1,17 +1,10 @@
-var { Schema, model } = require("mongoose");
+const { Schema, model } = require("mongoose");
 
 //User Schema
-var UserSchema = Schema(
+const UserSchema = Schema(
   {
-    fullName: {
-      type: String,
-    },
-    username: {
-      type: String,
-    },
-    email: {
-      type: String,
-    },
+    fullName: String,
+    email: String,
     phone: {
       type: String,
       require: true,
@@ -25,18 +18,12 @@ var UserSchema = Schema(
       type: String,
       required: true,
     },
-    birthday: {
-      type: Date,
-    },
-    address: {
-      type: String,
-    },
-    note: {
-      type: String,
-    },
-    photo: {
-      type: String,
-    },
+    birthday: Date,
+    address: String,
+    note: String,
+    gender: String,
+    photo: String,
+    totalBooked: Number,
   },
   { timestamps: true }
 );

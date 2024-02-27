@@ -74,7 +74,7 @@ and open database file and add your database connection string like below.
 ```js
 module.exports = {
   database:
-    'mongodb://[username:password@]host1[:port1][,...hostN[:portN]][/[defaultauthdb][?options]]',
+    'mongodb://[phone:password@]host1[:port1][,...hostN[:portN]][/[defaultauthdb][?options]]',
 }
 ```
 

@@ -8,10 +8,10 @@ const { securePassword } = require("../../utils/securePassword");
 
 //register new account
 const register = async (req, res) => {
-  const { username, password } = req.body;
+  const { phone, password } = req.body;
   try {
     const oldUser = await User.findOne({
-      username: username,
+      phone: phone,
     });
     if (oldUser) {
       return response(
@@ -26,7 +26,7 @@ const register = async (req, res) => {
     const hashedPassword = await securePassword(password);
 
     const user = await User.create({
-      username: username,
+      phone: phone,
       password: hashedPassword,
       userType: "user",
       activeStatus: true,
@@ -57,9 +57,9 @@ const register = async (req, res) => {
 
 //login
 const login = async (req, res) => {
-  const { username, password } = req.body;
+  const { phone, password } = req.body;
 
-  if (!username || !password) {
+  if (!phone || !password) {
     return response(
       res,
       StatusCodes.BAD_REQUEST,
@@ -71,7 +71,7 @@ const login = async (req, res) => {
 
   try {
     const user = await User.findOne({
-      username: username,
+      $or: [{ email: phone }, { phone }],
     });
 
     if (!user) {

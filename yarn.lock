@@ -388,6 +388,11 @@
     "object-assign" "^4"
     "vary" "^1"
 
+"dayjs@^1.11.10":
+  "integrity" "sha512-vjAczensTgRcqDERK0SR2XMwsF/tSvnvlv6VcF2GIhg6Sx4yOIt/irsr1RDJsKiIyBzJDpCoXiWWq28MqH2cnQ=="
+  "resolved" "https://registry.npmjs.org/dayjs/-/dayjs-1.11.10.tgz"
+  "version" "1.11.10"
+
 "debug@^3.2.7":
   "integrity" "sha512-CFjzYYAi4ThfiQvizrFQevTTXHtnCqWfe7x1AhgEscTz6ZbLbfoLRLPugTQyBth6f8ZERVUSyWHFD/7Wu4t1XQ=="
   "resolved" "https://registry.npmjs.org/debug/-/debug-3.2.7.tgz"

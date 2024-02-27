@@ -19,7 +19,6 @@ const router = Router();
 //Subscription
 router.post("/create", isAdmin, userValidation, createUser);
 router.post("/create-patient", createPatient);
-router.put("/update-patient/:id", updatePatient);
 router.post("/", getUsers);
 router.get("/:id", getUserDetails);
 router.put("/update/:id", isUser, updateUserDetails);

@@ -18,10 +18,12 @@ app.use(bodyParser.json());
 const authRoute = require("./src/routes/auth.routes");
 const fileRoute = require("./src/routes/file.routes");
 const userRoute = require("./src/routes/user.routes");
+const appointmentRoute = require("./src/routes/appointment.routes");
 
 app.use("/user", userRoute);
 app.use("/file", fileRoute);
 app.use("/auth", authRoute);
+app.use("/appointment", appointmentRoute);
 
 app.get("/", (req, res) => {
  res.sendFile(path.join(__dirname, "/src/view/serverRunning.html"));

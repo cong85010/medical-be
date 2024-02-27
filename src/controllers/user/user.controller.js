@@ -5,9 +5,9 @@ const { securePassword } = require("../../utils/securePassword");
 const { PASSWORD_DEFAULT } = require("../../../constants");
 
 const createUser = async (req, res) => {
-  const { username, email, phone, userType } = req.body;
+  const { email, phone, userType } = req.body;
   const password = PASSWORD_DEFAULT;
-  if (!username || !email || !phone || !userType) {
+  if (!email || !phone || !userType) {
     return response(
       res,
       StatusCodes.BAD_REQUEST,
@@ -19,7 +19,7 @@ const createUser = async (req, res) => {
 
   try {
     const oldUser = await User.findOne({
-      username,
+      $or: [{ email }, { phone }],
     });
     if (oldUser) {
       return response(
@@ -27,7 +27,7 @@ const createUser = async (req, res) => {
         StatusCodes.NOT_ACCEPTABLE,
         false,
         {},
-        "username đã tồn tại"
+        "Số điện thoại hoặc Email đã tồn tại"
       );
     }
     if (password.length < 6) {
@@ -47,7 +47,6 @@ const createUser = async (req, res) => {
       password: hashedPassword,
       userType,
       activeStatus: true,
-      username,
       phone,
     });
 
@@ -121,7 +120,7 @@ const createPatient = async (req, res) => {
       birthday,
       fullName,
       address,
-      note
+      note,
     });
 
     if (!user) {
@@ -172,7 +171,8 @@ const getUsers = async (req, res) => {
       .where(activeStatus !== undefined ? { activeStatus: activeStatus } : null)
       .where(userType ? { userType: userType } : null);
 
-    const users = await User.find().where(
+    const users = await User.find()
+      .where(
         searchKey
           ? {
               $or: [
@@ -222,7 +222,7 @@ const getUserDetails = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const user = await User.findById(id)
+    const user = await User.findById(id);
     if (!user) {
       return response(res, StatusCodes.NOT_FOUND, false, {}, "No user Found!");
     }
@@ -239,62 +239,7 @@ const getUserDetails = async (req, res) => {
   }
 };
 
-// Update User Dtails
 const updateUserDetails = async (req, res) => {
-  const { name, mobile, photo } = req.body;
-
-  const id = req.params.id;
-
-  let user = {};
-
-  if (name) {
-    user.name = name;
-  }
-  if (mobile) {
-    user.mobile = mobile;
-  }
-  if (photo) {
-    user.photo = photo;
-  }
-
-  if (user) {
-    user.updatedAt = new Date();
-    try {
-      const newUser = await User.findByIdAndUpdate(id, user, {
-        new: true,
-      }).exec();
-      if (!newUser) {
-        return response(
-          res,
-          StatusCodes.BAD_REQUEST,
-          false,
-          {},
-          "Could not update!"
-        );
-      }
-
-      return response(res, StatusCodes.ACCEPTED, true, { user: newUser }, null);
-    } catch (error) {
-      return response(
-        res,
-        StatusCodes.INTERNAL_SERVER_ERROR,
-        false,
-        {},
-        error.message
-      );
-    }
-  } else {
-    return response(
-      res,
-      StatusCodes.BAD_REQUEST,
-      false,
-      {},
-      "Could not update!"
-    );
-  }
-};
-
-const updatePatient = async (req, res) => {
   const user = req.body;
   const id = req.params.id;
 
@@ -425,5 +370,4 @@ module.exports = {
   deleteUser,
   createUser,
   createPatient,
-  updatePatient
 };

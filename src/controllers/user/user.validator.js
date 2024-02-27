@@ -4,7 +4,7 @@ const { StatusCodes } = require("http-status-codes");
 const { TYPE_EMPLOYEE } = require("../../../constants");
 
 const validation = joi.object({
-  username: joi.string().max(100).required(),
+  phone: joi.string().max(100).required(),
   email: joi.string().email().trim(true).required(),
   userType: joi
     .string()
@@ -20,7 +20,7 @@ const validation = joi.object({
 
 const userValidation = async (req, res, next) => {
   const data = {
-    username: req.body.username,
+    phone: req.body.phone,
     email: req.body.email,
     userType: req.body.userType,
   };

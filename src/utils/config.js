@@ -11,7 +11,7 @@ const createToken = (user) => {
   return sign(
     {
       _id: user._id,
-      username: user.username,
+      phone: user.phone,
     },
     config.secrets.jwt,
     {
