@@ -28,4 +28,20 @@ const generateTimeSlots = (date) => {
   return timeSlots;
 };
 
-module.exports = { generateTimeSlots };
+const TYPE_EMPLOYEE = {
+  admin: "admin",
+  user: "user",
+  doctor: "doctor",
+  administrative: "administrative",
+  sales: "sales",
+};
+
+const TYPE_EMPLOYEE_STR = {
+  admin: "Quản lý",
+  user: "Người dùng",
+  doctor: "Bác sĩ",
+  administrative: "Nhân viên hành chánh",
+  sales: "Nhân viên bán hàng",
+};
+
+module.exports = { generateTimeSlots, TYPE_EMPLOYEE, TYPE_EMPLOYEE_STR };

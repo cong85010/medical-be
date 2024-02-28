@@ -3,6 +3,7 @@ const { User } = require("../../models/User.model");
 const { response } = require("../../utils/response");
 const { securePassword } = require("../../utils/securePassword");
 const { PASSWORD_DEFAULT } = require("../../../constants");
+const { TYPE_EMPLOYEE_STR } = require("../../utils/constants");
 
 const createUser = async (req, res) => {
   const { email, phone, userType } = req.body;
@@ -147,7 +148,7 @@ const createPatient = async (req, res) => {
 
 // Get Users
 const getUsers = async (req, res) => {
-  const { skip, limit, activeStatus, userType, searchKey, sortBy } = req.body;
+  const { skip, limit, activeStatus, specialty, userType, searchKey, sortBy } = req.body;
 
   try {
     const total = await User.countDocuments()
@@ -168,8 +169,9 @@ const getUsers = async (req, res) => {
             }
           : null
       )
-      .where(activeStatus !== undefined ? { activeStatus: activeStatus } : null)
-      .where(userType ? { userType: userType } : null);
+      .where(activeStatus !== undefined ? { activeStatus } : null)
+      .where(userType ? { userType } : null)
+      .where(specialty ? { specialty } : null);
 
     const users = await User.find()
       .where(
@@ -191,6 +193,7 @@ const getUsers = async (req, res) => {
       )
       .where(activeStatus !== undefined ? { activeStatus: activeStatus } : null)
       .where(userType ? { userType: userType } : null)
+      .where(specialty ? { specialty } : null)
       .sort(sortBy ? { [sortBy.field]: [sortBy.order] } : { createdAt: -1 })
       .limit(limit ? limit : null)
       .skip(skip ? skip : null);
@@ -201,7 +204,7 @@ const getUsers = async (req, res) => {
         StatusCodes.NOT_FOUND,
         false,
         { total: 0, users: [] },
-        "No users Found"
+        "Không tìm thấy " + TYPE_EMPLOYEE_STR[userType] + " nào!"
       );
     }
 

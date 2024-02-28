@@ -24,6 +24,7 @@ const UserSchema = Schema(
     gender: String,
     photo: String,
     totalBooked: Number,
+    specialty: String,
   },
   { timestamps: true }
 );

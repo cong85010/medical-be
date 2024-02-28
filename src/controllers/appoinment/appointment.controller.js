@@ -19,14 +19,13 @@ const createAppointment = async (req, res) => {
         "Thời gian đang chọn đã có người đặt, vui lòng chọn thời gian khác!"
       );
     }
+
+    console.log(req.body);
     const newAppointment = new Appointment(req.body);
     const result = await newAppointment.save();
 
-    const currentDate = dayjs().format("YYYY-MM-DD");
-
     const totalBooked = await Appointment.countDocuments({
       patientId: patientId,
-      date: { $gte: currentDate },
       status: "booked",
     });
 
@@ -40,20 +39,37 @@ const createAppointment = async (req, res) => {
         new: true,
       }
     ).exec();
-    res.status(201).json(result);
+    return response(
+      res,
+      StatusCodes.ACCEPTED,
+      false,
+      null,
+      "Đặt lịch thành công!"
+    );
   } catch (error) {
     console.log("====================================");
     console.log(error);
     console.log("====================================");
-    res.status(500).json({ error: error.message });
+    return response(
+      res,
+      StatusCodes.BAD_REQUEST,
+      false,
+      null,
+      "Đặt lịch thất bại!"
+    );
   }
 };
 
-const getTimeSlots = async (date) => {
+const getTimeSlots = async (date, doctorId) => {
   try {
-    const bookedTimeSlots = await Appointment.find({
-      date,
-    }).distinct("time");
+    let query = { date };
+
+    // Add doctorId to the query if provided
+    if (doctorId) {
+      query.doctorId = doctorId;
+    }
+
+    const bookedTimeSlots = await Appointment.find(query).distinct("time");
 
     // Loại bỏ những thời gian đã đặt
     const availableTimeSlots = generateTimeSlots(date).filter(
@@ -70,7 +86,8 @@ const getTimeSlots = async (date) => {
 const getAvailableTimeSlots = async (req, res) => {
   try {
     const date = req.query.date;
-    const availableTimeSlots = await getTimeSlots(date);
+    const doctorId = req.query.doctorId;
+    const availableTimeSlots = await getTimeSlots(date, doctorId);
 
     return response(
       res,
@@ -87,11 +104,8 @@ const getAvailableTimeSlots = async (req, res) => {
 
 const getAppointments = async (req, res) => {
   try {
-    const currentDate = dayjs().format("DD/MM/YYYY");
-
     const appointments = await Appointment.find({
       patientId: req.query.patientId,
-      date: { $gte: currentDate },
     })
       .sort({ date: 1 })
       .sort({ time: 1 })
