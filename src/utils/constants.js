@@ -1,5 +1,6 @@
 const dayjs = require("dayjs");
 
+const MIN_HOUR_DAY = 8;
 const MAX_HOUR_DAY = 16;
 
 const generateTimeSlots = (date) => {
@@ -7,7 +8,7 @@ const generateTimeSlots = (date) => {
   const currentHour = dayjs().hour();
   const currentMinute = dayjs().minute();
 
-  for (let hour = 8; hour <= MAX_HOUR_DAY; hour++) {
+  for (let hour = MIN_HOUR_DAY; hour <= MAX_HOUR_DAY; hour++) {
     if (hour === 12) continue;
 
     if (dayjs().format("DD/MM/YYYY") === date) {
@@ -44,4 +45,16 @@ const TYPE_EMPLOYEE_STR = {
   sales: "Nhân viên bán hàng",
 };
 
-module.exports = { generateTimeSlots, TYPE_EMPLOYEE, TYPE_EMPLOYEE_STR };
+const STATUS_BOOKING = {
+  booked: "booked",
+  rejected: "rejected",
+  cancelled: "cancelled",
+  actived: "actived",
+};
+
+module.exports = {
+  generateTimeSlots,
+  TYPE_EMPLOYEE,
+  TYPE_EMPLOYEE_STR,
+  STATUS_BOOKING,
+};

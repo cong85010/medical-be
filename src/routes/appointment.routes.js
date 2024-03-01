@@ -3,6 +3,7 @@ const appointmentController = require('../controllers/appoinment/appointment.con
 const router = Router();
 
 router.post('/create', appointmentController.createAppointment);
+router.post('/update-status', appointmentController.updateStatusAppointment);
 router.get('/list-time', appointmentController.getAvailableTimeSlots);
 router.get('/', appointmentController.getAppointments);
 router.get('/:id', appointmentController.getAppointmentById);

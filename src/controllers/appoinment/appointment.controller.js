@@ -1,13 +1,13 @@
 const { StatusCodes } = require("http-status-codes");
 const { Appointment } = require("../../models/Appoinment.model");
 const { response } = require("../../utils/response");
-const { generateTimeSlots } = require("../../utils/constants");
+const { generateTimeSlots, STATUS_BOOKING } = require("../../utils/constants");
 const { User } = require("../../models/User.model");
 const dayjs = require("dayjs");
 
 const createAppointment = async (req, res) => {
   try {
-    const { date, time, patientId, doctorId} = req.body;
+    const { date, time, patientId, doctorId } = req.body;
     const timeSlots = await getTimeSlots(date, doctorId);
 
     if (!timeSlots.includes(time)) {
@@ -47,18 +47,14 @@ const createAppointment = async (req, res) => {
 
 const getTimeSlots = async (date, doctorId) => {
   try {
-    let query = { date };
+    let query = { date, status: STATUS_BOOKING.booked };
 
     // Add doctorId to the query if provided
     if (doctorId) {
-      query.doctorId = doctorId;
+      // query.doctorId = doctorId;
     }
 
-    console.log('====================================');
-    console.log(query);
     const bookedTimeSlots = await Appointment.find(query).distinct("time");
-    console.log(bookedTimeSlots);
-    console.log('====================================');
 
     // Loại bỏ những thời gian đã đặt
     const availableTimeSlots = generateTimeSlots(date).filter(
@@ -122,12 +118,44 @@ const getAppointmentById = async (req, res) => {
 
 const updateAppointment = async (req, res) => {
   try {
+    const newAppt = {
+      ...req.body,
+      updatedAt: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+    };
     const updatedAppointment = await Appointment.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      newAppt,
       { new: true }
     );
-    res.json(updatedAppointment);
+    return response(
+      res,
+      StatusCodes.OK,
+      true,
+      { appointment: updatedAppointment },
+      null
+    );
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const updateStatusAppointment = async (req, res) => {
+  try {
+    const updatedAppointment = await Appointment.findByIdAndUpdate(
+      req.body.appointmentId,
+      {
+        status: req.body.status,
+        updatedAt: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+      },
+      { new: true }
+    );
+    return response(
+      res,
+      StatusCodes.OK,
+      true,
+      { appointment: updatedAppointment },
+      null
+    );
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -151,4 +179,5 @@ module.exports = {
   updateAppointment,
   deleteAppointment,
   getAvailableTimeSlots,
+  updateStatusAppointment,
 };
