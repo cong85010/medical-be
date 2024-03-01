@@ -7,8 +7,8 @@ const dayjs = require("dayjs");
 
 const createAppointment = async (req, res) => {
   try {
-    const { date, time, patientId } = req.body;
-    const timeSlots = await getTimeSlots(date);
+    const { date, time, patientId, doctorId} = req.body;
+    const timeSlots = await getTimeSlots(date, doctorId);
 
     if (!timeSlots.includes(time)) {
       return response(
@@ -24,21 +24,6 @@ const createAppointment = async (req, res) => {
     const newAppointment = new Appointment(req.body);
     const result = await newAppointment.save();
 
-    const totalBooked = await Appointment.countDocuments({
-      patientId: patientId,
-      status: "booked",
-    });
-
-    await User.findByIdAndUpdate(
-      patientId,
-      {
-        updatedAt: new Date(),
-        totalBooked,
-      },
-      {
-        new: true,
-      }
-    ).exec();
     return response(
       res,
       StatusCodes.ACCEPTED,
@@ -69,7 +54,11 @@ const getTimeSlots = async (date, doctorId) => {
       query.doctorId = doctorId;
     }
 
+    console.log('====================================');
+    console.log(query);
     const bookedTimeSlots = await Appointment.find(query).distinct("time");
+    console.log(bookedTimeSlots);
+    console.log('====================================');
 
     // Loại bỏ những thời gian đã đặt
     const availableTimeSlots = generateTimeSlots(date).filter(

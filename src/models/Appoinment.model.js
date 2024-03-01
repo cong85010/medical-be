@@ -10,6 +10,7 @@ const AppointmentSchema = Schema({
   purpose: String,
   status: String,
   specialty: String,
+  counter: Number,
 });
 
 const Appointment = model("appointment", AppointmentSchema);
