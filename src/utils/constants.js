@@ -52,9 +52,19 @@ const STATUS_BOOKING = {
   actived: "actived",
 };
 
+const removeEmpty = (obj) => {
+  let newObj = {};
+  Object.keys(obj).forEach((key) => {
+    if (obj[key] === Object(obj[key])) newObj[key] = removeEmpty(obj[key]);
+    else if (obj[key]) newObj[key] = obj[key];
+  });
+  return newObj;
+};
+
 module.exports = {
   generateTimeSlots,
   TYPE_EMPLOYEE,
   TYPE_EMPLOYEE_STR,
   STATUS_BOOKING,
+  removeEmpty,
 };

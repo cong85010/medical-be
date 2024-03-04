@@ -1,7 +1,11 @@
 const { StatusCodes } = require("http-status-codes");
 const { Appointment } = require("../../models/Appoinment.model");
 const { response } = require("../../utils/response");
-const { generateTimeSlots, STATUS_BOOKING } = require("../../utils/constants");
+const {
+  generateTimeSlots,
+  STATUS_BOOKING,
+  removeEmpty,
+} = require("../../utils/constants");
 const { User } = require("../../models/User.model");
 const dayjs = require("dayjs");
 
@@ -20,7 +24,6 @@ const createAppointment = async (req, res) => {
       );
     }
 
-    console.log(req.body);
     const newAppointment = new Appointment(req.body);
     const result = await newAppointment.save();
 
@@ -89,12 +92,23 @@ const getAvailableTimeSlots = async (req, res) => {
 
 const getAppointments = async (req, res) => {
   try {
-    const appointments = await Appointment.find({
-      patientId: req.query.patientId,
-    })
+    const query = removeEmpty(req.query);
+
+    const appointments = await Appointment.find(query)
+      .populate({
+        path: "patientId",
+        model: "user",
+        select: "_id fullName phone",
+      })
+      .populate({
+        path: "doctorId",
+        model: "user",
+        select: "_id fullName phone",
+      })
       .sort({ date: 1 })
       .sort({ time: 1 })
       .exec();
+
     return response(
       res,
       StatusCodes.OK,

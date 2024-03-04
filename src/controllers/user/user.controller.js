@@ -148,8 +148,21 @@ const createPatient = async (req, res) => {
 
 // Get Users
 const getUsers = async (req, res) => {
-  const { skip, limit, activeStatus, specialty, userType, searchKey, sortBy } = req.body;
+  const {
+    skip,
+    limit,
+    activeStatus,
+    specialty,
+    userType,
+    searchKey,
+    sortBy,
+    userTypes,
+    activeStatuses,
+  } = req.body;
 
+  console.log("====================================");
+  console.log(userTypes);
+  console.log("====================================");
   try {
     const total = await User.countDocuments()
       .where(
@@ -170,7 +183,13 @@ const getUsers = async (req, res) => {
           : null
       )
       .where(activeStatus !== undefined ? { activeStatus } : null)
+      .where(
+        activeStatuses !== undefined
+          ? { activeStatus: { $in: activeStatuses } }
+          : null
+      )
       .where(userType ? { userType } : null)
+      .where(userTypes ? { userType: { $in: userTypes } } : null)
       .where(specialty ? { specialty } : null);
 
     const users = await User.find()
@@ -194,6 +213,12 @@ const getUsers = async (req, res) => {
       .where(activeStatus !== undefined ? { activeStatus: activeStatus } : null)
       .where(userType ? { userType: userType } : null)
       .where(specialty ? { specialty } : null)
+      .where(userTypes ? { userType: { $in: userTypes } } : null)
+      .where(
+        activeStatuses !== undefined
+          ? { activeStatus: { $in: activeStatuses } }
+          : null
+      )
       .sort(sortBy ? { [sortBy.field]: [sortBy.order] } : { createdAt: -1 })
       .limit(limit ? limit : null)
       .skip(skip ? skip : null);
@@ -201,15 +226,15 @@ const getUsers = async (req, res) => {
     if (!users || users.length === 0) {
       return response(
         res,
-        StatusCodes.NOT_FOUND,
+        StatusCodes.ACCEPTED,
         false,
         { total: 0, users: [] },
-        "Không tìm thấy " + TYPE_EMPLOYEE_STR[userType] + " nào!"
       );
     }
 
     return response(res, StatusCodes.OK, true, { total, users }, null);
   } catch (error) {
+
     return response(
       res,
       StatusCodes.INTERNAL_SERVER_ERROR,
