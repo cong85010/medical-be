@@ -5,9 +5,16 @@ const {
   generateTimeSlots,
   STATUS_BOOKING,
   removeEmpty,
+  queryStringToArrayObjects,
+  queryStringToObject,
+  FORMAT_DATE,
+  FORMAT_DATE_TIME,
+  formatedDate,
+  formatedDateTimeISO,
 } = require("../../utils/constants");
 const { User } = require("../../models/User.model");
 const dayjs = require("dayjs");
+dayjs.locale("en"); // Chọn 'en' cho tiếng Anh
 
 const createAppointment = async (req, res) => {
   try {
@@ -23,8 +30,17 @@ const createAppointment = async (req, res) => {
         "Thời gian đang chọn đã có người đặt, vui lòng chọn thời gian khác!"
       );
     }
+    const appointment = {
+      ...req.body,
+      dateTime: formatedDateTimeISO(
+        `${req.body.date} ${req.body.time}`,
+        FORMAT_DATE_TIME
+      ),
+    };
 
-    const newAppointment = new Appointment(req.body);
+    console.log("appointment", appointment);
+    const newAppointment = new Appointment(appointment);
+
     const result = await newAppointment.save();
 
     return response(
@@ -54,7 +70,7 @@ const getTimeSlots = async (date, doctorId) => {
 
     // Add doctorId to the query if provided
     if (doctorId) {
-      // query.doctorId = doctorId;
+      query.doctorId = doctorId;
     }
 
     const bookedTimeSlots = await Appointment.find(query).distinct("time");
@@ -93,6 +109,30 @@ const getAvailableTimeSlots = async (req, res) => {
 const getAppointments = async (req, res) => {
   try {
     const query = removeEmpty(req.query);
+    let sorted = null;
+    if (query.startDate) {
+      query["dateTime"] = {
+        $gte: dayjs(query.startDate, FORMAT_DATE).toISOString(),
+        $lte: dayjs(query.endDate, FORMAT_DATE).toISOString(),
+      };
+
+      delete query.startDate;
+      delete query.endDate;
+    }
+
+    console.log(query);
+
+    if (query.sort) {
+      sorted = queryStringToObject(query.sort);
+      delete query.sort;
+    }
+
+    const renderSort = (sort) => {
+      if (sort.length === 1) {
+        return sort[0];
+      }
+      return sort;
+    };
 
     const appointments = await Appointment.find(query)
       .populate({
@@ -105,8 +145,7 @@ const getAppointments = async (req, res) => {
         model: "user",
         select: "_id fullName phone",
       })
-      .sort({ date: 1 })
-      .sort({ time: 1 })
+      .sort(sorted ? renderSort(sorted) : { updatedAt: -1, time: 1 })
       .exec();
 
     return response(
@@ -117,16 +156,33 @@ const getAppointments = async (req, res) => {
       null
     );
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: error.message });
   }
 };
 
 const getAppointmentById = async (req, res) => {
   try {
-    const appointment = await Appointment.findById(req.params.id);
-    res.json(appointment);
+    const appointment = await Appointment.findById(req.params.id)
+      .populate({
+        path: "patientId",
+        model: "user",
+        select: "_id fullName phone",
+      })
+      .populate({
+        path: "doctorId",
+        model: "user",
+        select: "_id fullName phone",
+      });
+    return response(res, StatusCodes.OK, true, { appointment }, null);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return response(
+      res,
+      StatusCodes.BAD_REQUEST,
+      true,
+      { appointment: {} },
+      null
+    );
   }
 };
 
@@ -134,8 +190,13 @@ const updateAppointment = async (req, res) => {
   try {
     const newAppt = {
       ...req.body,
-      updatedAt: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+      dateTime: dayjs(
+        `${req.body.time} ${req.body.date} `,
+        "DD/MM/YYYY HH:mm"
+      ).toISOString(),
+      updatedAt: dayjs().toISOString(),
     };
+
     const updatedAppointment = await Appointment.findByIdAndUpdate(
       req.params.id,
       newAppt,
@@ -149,7 +210,13 @@ const updateAppointment = async (req, res) => {
       null
     );
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return response(
+      res,
+      StatusCodes.INTERNAL_SERVER_ERROR,
+      false,
+      {},
+      error.message
+    );
   }
 };
 
@@ -159,7 +226,7 @@ const updateStatusAppointment = async (req, res) => {
       req.body.appointmentId,
       {
         status: req.body.status,
-        updatedAt: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+        updatedAt: dayjs().toISOString(),
       },
       { new: true }
     );
@@ -171,7 +238,14 @@ const updateStatusAppointment = async (req, res) => {
       null
     );
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.log(error);
+    return response(
+      res,
+      StatusCodes.INTERNAL_SERVER_ERROR,
+      false,
+      {},
+      error.message
+    );
   }
 };
 

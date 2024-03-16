@@ -4,6 +4,10 @@ const cors = require("cors");
 const fileUpload = require("express-fileupload");
 const bodyParser = require("body-parser");
 const path = require("path");
+const customParseFormat = require('dayjs/plugin/customParseFormat')
+const dayjs = require("dayjs");
+dayjs.extend(customParseFormat)
+
 
 const app = express();
 app.use(fileUpload());

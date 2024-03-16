@@ -9,6 +9,7 @@
   "bin": "./bin/cli.js",
   "main": "server.js",
   "scripts": {
+    "createAdmin": "node ./src/config/createAdmin.js",
     "start": "node server.js",
     "dev": "nodemon server.js"
   },

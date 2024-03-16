@@ -52,6 +52,30 @@ const STATUS_BOOKING = {
   actived: "actived",
 };
 
+const FORMAT_DATE_TIME = "DD/MM/YYYY HH:mm";
+
+const TIME_CAN_EDIT = 2;
+const TIME_PHYSICAL_EXAM = 30;
+
+const FORMAT_DATE = "DD/MM/YYYY";
+const FORMAT_TIME = "HH:mm";
+
+const getToday = () => {
+  return dayjs().format(FORMAT_DATE);
+};
+
+const formatedDate = (date, format = null) => {
+  return dayjs(date, format || FORMAT_DATE).format(format || FORMAT_DATE);
+};
+
+const formatedTime = (date) => {
+  return dayjs(date, FORMAT_TIME).format(FORMAT_TIME);
+};
+
+const formatedDateTimeISO = (date, format = null) => {
+  return dayjs(date, format || FORMAT_DATE).toISOString();
+};
+
 const removeEmpty = (obj) => {
   let newObj = {};
   Object.keys(obj).forEach((key) => {
@@ -61,10 +85,45 @@ const removeEmpty = (obj) => {
   return newObj;
 };
 
+function queryStringToObject(queryString) {
+  var params = new URLSearchParams(queryString);
+  var result = {};
+
+  params.forEach(function (value, key) {
+    result[key] = !isNaN(value) ? parseFloat(value) : value;
+  });
+
+  return result;
+}
+
+function queryStringToArrayObjects(queryString) {
+  var params = new URLSearchParams(queryString);
+  var result = [];
+
+  params.forEach(function (value, key) {
+    var obj = {};
+    obj[key] = !isNaN(value) ? parseFloat(value) : value;
+    result.push(obj);
+  });
+
+  return result;
+}
+
 module.exports = {
   generateTimeSlots,
+  getToday,
+  formatedDate,
+  formatedTime,
+  TIME_CAN_EDIT,
+  TIME_PHYSICAL_EXAM,
   TYPE_EMPLOYEE,
   TYPE_EMPLOYEE_STR,
   STATUS_BOOKING,
+  FORMAT_TIME,
+  FORMAT_DATE_TIME,
   removeEmpty,
+  FORMAT_DATE,
+  formatedDateTimeISO,
+  queryStringToObject,
+  queryStringToArrayObjects,
 };

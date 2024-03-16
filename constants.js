@@ -1,4 +1,14 @@
+const dayjs = require("dayjs");
+
 const PASSWORD_DEFAULT = "123456";
+const adminAccountDefault = {
+  password: PASSWORD_DEFAULT,
+  activeStatus: true,
+  userType: "admin",
+  email: "admin@gmail.com",
+  fullName: "Admin",
+  gender: "male",
+};
 
 const TYPE_EMPLOYEE = {
   admin: "admin",
@@ -16,4 +26,4 @@ const TYPE_EMPLOYEE_STR = {
   sales: "Nhân viên bán hàng",
 };
 
-module.exports = { PASSWORD_DEFAULT, TYPE_EMPLOYEE };
+module.exports = { PASSWORD_DEFAULT, TYPE_EMPLOYEE, adminAccountDefault };

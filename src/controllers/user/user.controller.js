@@ -6,7 +6,7 @@ const { PASSWORD_DEFAULT } = require("../../../constants");
 const { TYPE_EMPLOYEE_STR } = require("../../utils/constants");
 
 const createUser = async (req, res) => {
-  const { email, phone, userType } = req.body;
+  const { email, phone, userType, ...objUser } = req.body;
   const password = PASSWORD_DEFAULT;
   if (!email || !phone || !userType) {
     return response(
@@ -49,6 +49,7 @@ const createUser = async (req, res) => {
       userType,
       activeStatus: true,
       phone,
+      ...objUser,
     });
 
     if (!user) {
