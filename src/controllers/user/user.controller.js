@@ -161,9 +161,6 @@ const getUsers = async (req, res) => {
     activeStatuses,
   } = req.body;
 
-  console.log("====================================");
-  console.log(userTypes);
-  console.log("====================================");
   try {
     const total = await User.countDocuments()
       .where(

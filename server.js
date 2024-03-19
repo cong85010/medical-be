@@ -25,12 +25,14 @@ const fileRoute = require("./src/routes/file.routes");
 const userRoute = require("./src/routes/user.routes");
 const appointmentRoute = require("./src/routes/appointment.routes");
 const prescriptionRoute = require("./src/routes/prescription.routes");
+const medicalRecordRoute = require("./src/routes/medicalRecord.routes");
 
 app.use("/user", userRoute);
 app.use("/file", fileRoute);
 app.use("/auth", authRoute);
 app.use("/appointment", appointmentRoute);
 app.use("/prescription", prescriptionRoute);
+app.use("/medical-record", medicalRecordRoute);
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "/src/view/serverRunning.html"));
