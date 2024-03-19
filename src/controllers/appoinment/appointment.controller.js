@@ -120,8 +120,6 @@ const getAppointments = async (req, res) => {
       delete query.endDate;
     }
 
-    console.log(query);
-
     if (query.sort) {
       sorted = queryStringToObject(query.sort);
       delete query.sort;
@@ -138,7 +136,7 @@ const getAppointments = async (req, res) => {
       .populate({
         path: "patientId",
         model: "user",
-        select: "_id fullName phone",
+        select: "_id fullName phone birthday",
       })
       .populate({
         path: "doctorId",
@@ -167,7 +165,7 @@ const getAppointmentById = async (req, res) => {
       .populate({
         path: "patientId",
         model: "user",
-        select: "_id fullName phone",
+        select: "_id fullName phone birthday",
       })
       .populate({
         path: "doctorId",
