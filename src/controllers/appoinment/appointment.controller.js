@@ -38,7 +38,6 @@ const createAppointment = async (req, res) => {
       ),
     };
 
-    console.log("appointment", appointment);
     const newAppointment = new Appointment(appointment);
 
     const result = await newAppointment.save();

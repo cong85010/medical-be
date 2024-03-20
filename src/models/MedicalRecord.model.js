@@ -11,7 +11,7 @@ const medicalRecordSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "user",
   },
-  image: String,
+  files: [String],
   result: {
     required: true,
     type: String,

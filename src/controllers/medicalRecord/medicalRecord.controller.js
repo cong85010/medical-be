@@ -23,15 +23,15 @@ const createMedicalRecord = async (req, res) => {
       );
     }
 
-    console.log(medicalRecord);
+    const newMedicalRecord = new MedicalRecord(medicalRecord);
 
-    const newMedicalRecord = await MedicalRecord.create({ medicalRecord: medicalRecord });
+    const result = await newMedicalRecord.save();
 
     return response(
       res,
       StatusCodes.ACCEPTED,
       true,
-      { medicalRecord: newMedicalRecord },
+      { medicalRecord: result },
       null
     );
   } catch (error) {
@@ -49,7 +49,19 @@ const createMedicalRecord = async (req, res) => {
 const getMedicalRecordById = async (req, res) => {
   try {
     const { id } = req.query;
-    const medicalRecord = await MedicalRecord.find({ _id: id });
+    const medicalRecord = await MedicalRecord.find({ _id: id })
+      .populate({
+        path: "patientId",
+        model: "user",
+        select: "_id fullName phone birthday",
+      })
+      .populate({
+        path: "doctorId",
+        model: "user",
+        select: "_id fullName phone",
+      })
+      .sort({ updatedAt: -1 })
+      .exec();
     return response(
       res,
       StatusCodes.ACCEPTED,
@@ -64,26 +76,37 @@ const getListMedicalRecord = async (req, res) => {
   try {
     const query = req.body;
     const searchKey = query.searchKey || "";
-    let filter = {};
-    if (query.patientId) {
-      filter = { ...filter, patientId: query.patientId };
-    }
-    if (query.doctorId) {
-      filter = { ...filter, doctorId: query.doctorId };
-    }
 
-    const medicalRecords = await MedicalRecord.find(filter)
-      .where({
-        $or: [
-          {
-            result: { $regex: searchKey, $options: "i" },
-          },
-        ],
+    const medicalRecords = await MedicalRecord.find(query)
+      .populate({
+        path: "patientId",
+        model: "user",
+        select: "_id fullName phone birthday",
       })
+      .populate({
+        path: "doctorId",
+        model: "user",
+        select: "_id fullName phone",
+      })
+      .sort({ updatedAt: -1 })
+      .where(
+        searchKey
+          ? {
+              $or: [
+                {
+                  result: { $regex: searchKey, $options: "i" },
+                },
+              ],
+            }
+          : null
+      )
       .exec();
 
     return response(res, StatusCodes.OK, true, { medicalRecords }, null);
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+    return response(res, StatusCodes.BAD_REQUEST, { error: error.message });
+  }
 };
 
 const updateMedicalRecord = async (req, res) => {

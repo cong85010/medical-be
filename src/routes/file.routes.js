@@ -1,5 +1,5 @@
 const { Router } = require('express')
-const { uploadFile } = require('../controllers/file.controller')
+const { uploadFile, uploadFiles } = require('../controllers/file.controller')
 
 const router = Router()
 
@@ -7,5 +7,6 @@ const router = Router()
 
 //File Upload
 router.post('/upload', uploadFile)
+router.post('/uploads', uploadFiles)
 
 module.exports = router

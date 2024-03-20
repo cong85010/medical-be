@@ -7,7 +7,6 @@ const { v4: uuidv4 } = require("uuid");
 
 //Upload Files to Local Directory
 const uploadFile = async (req, res) => {
-  console.log("req.files", req.files);
   if (!req.files || Object.keys(req.files).length === 0) {
     let msg = "No file found !";
     return response(res, StatusCodes.BAD_REQUEST, false, null, msg);
@@ -16,7 +15,6 @@ const uploadFile = async (req, res) => {
   try {
     const file = req.files.file;
 
-    console.log("file", file);
     const fileName = file.name;
     const filePath = `${uuidv4()}-${fileName}`;
     file.mv(`uploads/${filePath}`, (err) => {
@@ -34,7 +32,7 @@ const uploadFile = async (req, res) => {
         res,
         StatusCodes.ACCEPTED,
         true,
-        { fileName: photoURL },
+        { fileURLs: [photoURL] },
         null
       );
     });
@@ -72,14 +70,11 @@ const uploadFiles = async (req, res) => {
     // Wait for all file uploads to complete
     const uploadedFiles = await Promise.all(fileUploadPromises);
 
-    // Construct an array of file paths or URLs
-    const fileURLs = uploadedFiles.map((filePath) => `uploads/${filePath}`);
-
     return response(
       res,
       StatusCodes.ACCEPTED,
       true,
-      { fileURLs: fileURLs },
+      { fileURLs: uploadedFiles },
       null
     );
   } catch (error) {
