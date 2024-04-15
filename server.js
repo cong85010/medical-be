@@ -24,14 +24,14 @@ const authRoute = require("./src/routes/auth.routes");
 const fileRoute = require("./src/routes/file.routes");
 const userRoute = require("./src/routes/user.routes");
 const appointmentRoute = require("./src/routes/appointment.routes");
-const prescriptionRoute = require("./src/routes/prescription.routes");
+const medicineRoute = require("./src/routes/medicine.routes");
 const medicalRecordRoute = require("./src/routes/medicalRecord.routes");
 
 app.use("/user", userRoute);
 app.use("/file", fileRoute);
 app.use("/auth", authRoute);
 app.use("/appointment", appointmentRoute);
-app.use("/prescription", prescriptionRoute);
+app.use("/medicine", medicineRoute);
 app.use("/medical-record", medicalRecordRoute);
 
 app.get("/", (req, res) => {

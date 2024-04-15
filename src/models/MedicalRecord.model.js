@@ -17,7 +17,7 @@ const medicalRecordSchema = new mongoose.Schema({
     type: String,
   },
   note: String,
-  prescriptions: {
+  medicines: {
     type: [mongoose.Schema.Types.Mixed],
     default: [],
   },

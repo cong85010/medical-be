@@ -2,7 +2,7 @@ const dayjs = require("dayjs");
 const { Schema, model } = require("mongoose");
 const { FORMAT_DATE_TIME, formatedDateTimeISO } = require("../utils/constants");
 
-const PrescriptionSchema = Schema({
+const MedicineSchema = Schema({
   name: {
     type: String,
     require: true,
@@ -11,10 +11,24 @@ const PrescriptionSchema = Schema({
     type: Number,
     require: true,
   },
+  price: {
+    type: Number,
+    require: true,
+  },
+  usage: {
+    type: String,
+  },
+  note: {
+    type: String,
+  },
+  description: {
+    type: String,
+    require: true,
+  },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });
 
-const Prescription = model("prescription", PrescriptionSchema);
+const Medicine = model("medicine", MedicineSchema);
 
-module.exports = { Prescription };
+module.exports = { Medicine };
