@@ -21,6 +21,10 @@ const medicalRecordSchema = new mongoose.Schema({
     type: [mongoose.Schema.Types.Mixed],
     default: [],
   },
+  status: {
+    type: String,
+    default: "examined",
+  },
   createdAt: {
     type: Date,
     default: Date.now,

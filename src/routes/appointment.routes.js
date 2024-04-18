@@ -9,5 +9,6 @@ router.get('/', appointmentController.getAppointments);
 router.get('/:id', appointmentController.getAppointmentById);
 router.put('/:id', appointmentController.updateAppointment);
 router.delete('/:id', appointmentController.deleteAppointment);
+router.post('/query', appointmentController.getListAppointmentQuery)
 
 module.exports = router;

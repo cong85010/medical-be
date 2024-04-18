@@ -46,11 +46,29 @@ const TYPE_EMPLOYEE_STR = {
 };
 
 const STATUS_BOOKING = {
+  medicined: "medicined",
+  finished: "finished",
   booked: "booked",
+  waiting: "waiting",
+  examining: "examining",
   rejected: "rejected",
   cancelled: "cancelled",
-  actived: "actived",
 };
+
+const STATUS_BOOKING_STR = {
+  medicined: "Đã kê toa",
+  finished: "Đã khám",
+  booked: "Đã đặt",
+  waiting: "Chờ khám",
+  examining: "Đang khám",
+  rejected: "Từ chối",
+  cancelled: "Đã hủy",
+};
+
+const STATUS_MEDICAL = {
+  examined: "examined",
+  medicined: "medicined",
+}
 
 const FORMAT_DATE_TIME = "DD/MM/YYYY HH:mm";
 
@@ -119,6 +137,8 @@ module.exports = {
   TYPE_EMPLOYEE,
   TYPE_EMPLOYEE_STR,
   STATUS_BOOKING,
+  STATUS_MEDICAL,
+  STATUS_BOOKING_STR,
   FORMAT_TIME,
   FORMAT_DATE_TIME,
   removeEmpty,

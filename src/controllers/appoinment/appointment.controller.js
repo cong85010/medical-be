@@ -257,6 +257,146 @@ const deleteAppointment = async (req, res) => {
   }
 };
 
+const getListAppointmentQuery = async (req, res) => {
+  try {
+    const query = req.body;
+    const { status, date, searchKey } = query;
+    console.log("====================================");
+    console.log(status, date, searchKey);
+    console.log("====================================");
+    let sorted = null;
+    if (query.startDate) {
+      query["dateTime"] = {
+        $gte: dayjs(query.startDate, FORMAT_DATE).toISOString(),
+        $lte: dayjs(query.endDate, FORMAT_DATE).toISOString(),
+      };
+
+      delete query.startDate;
+      delete query.endDate;
+    }
+
+    if (query.sort) {
+      sorted = queryStringToObject(query.sort);
+      delete query.sort;
+    }
+
+    const renderSort = (sort) => {
+      if (sort.length === 1) {
+        return sort[0];
+      }
+      return sort;
+    };
+
+    const appointments = await Appointment.aggregate([
+      {
+        $lookup: {
+          from: "users",
+          localField: "patientId",
+          foreignField: "_id",
+          as: "patient",
+        },
+      },
+      {
+        $match: {
+          date: date,
+          status: status ? status : { $ne: null },
+          $or: [
+            { "patient.fullName": { $regex: searchKey, $options: "i" } },
+            { "patient.phone": { $regex: searchKey, $options: "i" } },
+            { "patient.birthday": { $regex: searchKey, $options: "i" } },
+          ],
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          patient: { $arrayElemAt: ["$patient", 0] },
+          doctorId: 1,
+          date: 1,
+          time: 1,
+          dateTime: 1,
+          status: 1,
+          specialty: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          __v: 1,
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "doctorId",
+          foreignField: "_id",
+          as: "doctor",
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          doctor: { $arrayElemAt: ["$doctor", 0] },
+          date: 1,
+          time: 1,
+          dateTime: 1,
+          status: 1,
+          specialty: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          __v: 1,
+          patient: {
+            _id: 1,
+            fullName: 1,
+            phone: 1,
+            birthday: 1,
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          doctorId: "$doctor._id",
+          doctorFullName: "$doctor.fullName",
+          doctorPhone: "$doctor.phone",
+          doctorSpecialty: "$doctor.specialty",
+          patientId: "$patient._id",
+          patientFullName: "$patient.fullName",
+          patientPhone: "$patient.phone",
+          patientBirthday: "$patient.birthday",
+          date: 1,
+          time: 1,
+          dateTime: 1,
+          status: 1,
+          specialty: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          __v: 1,
+        },
+      },
+      {
+        $sort: sorted ? renderSort(sorted) : { updatedAt: -1, time: 1 },
+      },
+    ]);
+
+    return response(
+      res,
+      StatusCodes.OK,
+      true,
+      { appointments: appointments },
+      null
+    );
+  } catch (error) {
+    console.log("====================================");
+    console.log(error);
+    console.log("====================================");
+    return response(
+      res,
+      StatusCodes.BAD_REQUEST,
+      true,
+      { appointments: [] },
+      "Error getting appointments!"
+    );
+  }
+};
+
 module.exports = {
   createAppointment,
   getAppointments,
@@ -265,4 +405,5 @@ module.exports = {
   deleteAppointment,
   getAvailableTimeSlots,
   updateStatusAppointment,
+  getListAppointmentQuery,
 };

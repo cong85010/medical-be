@@ -25,6 +25,7 @@ const MedicineSchema = Schema({
     type: String,
     require: true,
   },
+  outOfPill: Boolean,
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });
