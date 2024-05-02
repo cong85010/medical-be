@@ -74,6 +74,7 @@ const FORMAT_DATE_TIME = "DD/MM/YYYY HH:mm";
 
 const TIME_CAN_EDIT = 2;
 const TIME_PHYSICAL_EXAM = 30;
+const FORMAT_DATE_MONGO_ISO = "YYYY-MM-DDTHH:mm:ssZ";
 
 const FORMAT_DATE = "DD/MM/YYYY";
 const FORMAT_TIME = "HH:mm";

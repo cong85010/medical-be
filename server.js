@@ -27,6 +27,7 @@ const appointmentRoute = require("./src/routes/appointment.routes");
 const medicineRoute = require("./src/routes/medicine.routes");
 const medicalRecordRoute = require("./src/routes/medicalRecord.routes");
 const orderRoute = require("./src/routes/order.routes");
+const meetingRoute = require("./src/routes/meeting.routes");
 
 app.use("/user", userRoute);
 app.use("/file", fileRoute);
@@ -35,6 +36,7 @@ app.use("/appointment", appointmentRoute);
 app.use("/medicine", medicineRoute);
 app.use("/medical-record", medicalRecordRoute);
 app.use("/order", orderRoute);
+app.use("/meeting", meetingRoute);
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "/src/view/serverRunning.html"));
