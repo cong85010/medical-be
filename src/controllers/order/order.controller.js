@@ -63,12 +63,86 @@ async function getOrderByMedicalRecordId(req, res) {
         path: "salesId",
         model: "user",
         select: "_id fullName phone",
+      })
+      .populate({
+        path: "medicalRecordId",
+        model: "medicalRecord",
+        select: "_id patientId doctorId",
+      })
+      .populate({
+        path: "medicalRecordId",
+        model: "medicalRecord",
+        populate: {
+          path: "patientId",
+          model: "user",
+          select: "_id fullName phone",
+        },
+      })
+      .populate({
+        path: "patientId",
+        model: "user",
+      })
+      .populate({
+        path: "medicalRecordId",
+        model: "medicalRecord",
+        populate: {
+          path: "doctorId",
+          model: "user",
+          select: "_id fullName specialty",
+        },
       });
 
     return response(res, StatusCodes.OK, true, { order: order }, null);
   } catch (error) {
     console.error("Error fetching order by ID:", error);
     return response(res, StatusCodes.BAD_REQUEST, true, { order: null }, null);
+  }
+}
+
+async function getOrderByPatientId(req, res) {
+  try {
+    const { patientId } = req.params;
+    const orders = await Order.find({ patientId })
+      .sort({ createdAt: -1 })
+      .populate("medicines")
+      .populate({
+        path: "salesId",
+        model: "user",
+        select: "_id fullName phone",
+      })
+      .populate({
+        path: "patientId",
+        model: "user",
+      })
+      .populate({
+        path: "medicalRecordId",
+        model: "medicalRecord",
+        select: "_id patientId doctorId",
+      })
+      .populate({
+        path: "medicalRecordId",
+        model: "medicalRecord",
+        populate: {
+          path: "patientId",
+          model: "user",
+          select: "_id fullName phone",
+        },
+      })
+
+      .populate({
+        path: "medicalRecordId",
+        model: "medicalRecord",
+        populate: {
+          path: "doctorId",
+          model: "user",
+          select: "_id fullName specialty",
+        },
+      });
+
+    return response(res, StatusCodes.OK, true, { orders }, null);
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    return response(res, StatusCodes.BAD_REQUEST, true, { orders: [] }, null);
   }
 }
 
@@ -101,13 +175,63 @@ async function deleteOrder(req, res) {
 }
 
 // Get all orders
-async function getAllOrders() {
+async function getAllOrders(req, res) {
   try {
-    const orders = await Order.find().populate("medicines");
-    return response(res, StatusCodes.OK, true, { orders: orders }, null);
+    const query = req.query;
+    const orderNumber = query.orderNumber;
+    const limit = query.limit || 10;
+    const page = query.page || 1;
+
+    const total = await Order.count(orderNumber ? { orderNumber } : {});
+
+    const orders = await Order.find(orderNumber ? { orderNumber } : {})
+      .sort({ createdAt: -1 })
+      .populate("medicines")
+      .populate({
+        path: "salesId",
+        model: "user",
+        select: "_id fullName phone",
+      })
+      .populate({
+        path: "patientId",
+        model: "user",
+      })
+      .populate({
+        path: "medicalRecordId",
+        model: "medicalRecord",
+        select: "_id patientId doctorId",
+      })
+      .populate({
+        path: "medicalRecordId",
+        model: "medicalRecord",
+        populate: {
+          path: "patientId",
+          model: "user",
+          select: "_id fullName phone",
+        },
+      })
+      .populate({
+        path: "medicalRecordId",
+        model: "medicalRecord",
+        populate: {
+          path: "doctorId",
+          model: "user",
+          select: "_id fullName specialty",
+        },
+      })
+      .limit(limit)
+      .skip((page - 1) * limit);
+
+    return response(res, StatusCodes.OK, true, { orders, total }, null);
   } catch (error) {
     console.error("Error fetching orders:", error);
-    return response(res, StatusCodes.BAD_REQUEST, true, { order: null }, null);
+    return response(
+      res,
+      StatusCodes.BAD_REQUEST,
+      true,
+      { order: null, total: 0 },
+      null
+    );
   }
 }
 
@@ -119,4 +243,5 @@ module.exports = {
   updateOrder,
   deleteOrder,
   getOrderByMedicalRecordId,
+  getOrderByPatientId,
 };

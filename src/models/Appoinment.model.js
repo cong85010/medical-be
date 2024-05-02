@@ -19,6 +19,10 @@ const AppointmentSchema = Schema({
   serviceType: String,
   specialty: String,
   counter: Number,
+  isExamined: {
+    type: Boolean,
+    default: false,
+  },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });

@@ -3,6 +3,7 @@
 const { StatusCodes } = require("http-status-codes");
 const MedicalRecord = require("../../models/MedicalRecord.model");
 const { response } = require("../../utils/response");
+const { Appointment } = require("../../models/Appoinment.model");
 
 // Define your controller functions
 const createMedicalRecord = async (req, res) => {
@@ -26,6 +27,12 @@ const createMedicalRecord = async (req, res) => {
     const newMedicalRecord = new MedicalRecord(medicalRecord);
 
     const result = await newMedicalRecord.save();
+    // update isExamined in appointment
+    await Appointment.findByIdAndUpdate(
+      medicalRecord.appointmentId,
+      { isExamined: true },
+      { new: true }
+    );
 
     return response(
       res,

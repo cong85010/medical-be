@@ -9,9 +9,14 @@ const orderSchema = new mongoose.Schema({
   medicalRecordId: {
     require: true,
     type: mongoose.Schema.Types.ObjectId,
-    ref: "medical",
+    ref: "medicalRecord",
   },
   salesId: {
+    require: true,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "user",
+  },
+  patientId: {
     require: true,
     type: mongoose.Schema.Types.ObjectId,
     ref: "user",
@@ -25,7 +30,7 @@ const orderSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  notes: {
+  note: {
     type: String,
   },
   createdAt: {
