@@ -16,7 +16,7 @@ app.use(
   })
 );
 
-app.use('/uploads', express.static('uploads'));
+app.use("/uploads", express.static("uploads"));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
@@ -28,6 +28,7 @@ const medicineRoute = require("./src/routes/medicine.routes");
 const medicalRecordRoute = require("./src/routes/medicalRecord.routes");
 const orderRoute = require("./src/routes/order.routes");
 const meetingRoute = require("./src/routes/meeting.routes");
+const statisticRoute = require("./src/routes/statistic.routes");
 
 app.use("/user", userRoute);
 app.use("/file", fileRoute);
@@ -37,6 +38,7 @@ app.use("/medicine", medicineRoute);
 app.use("/medical-record", medicalRecordRoute);
 app.use("/order", orderRoute);
 app.use("/meeting", meetingRoute);
+app.use("/statistic", statisticRoute);
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "/src/view/serverRunning.html"));

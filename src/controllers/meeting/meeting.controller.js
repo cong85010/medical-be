@@ -13,7 +13,6 @@ const createMeeting = async (req, res) => {
   try {
     const newMeeting = req.body;
 
-
     // code Validate dubplicate meeting in timeline
     const meetings = await Meeting.find({
       room: newMeeting.room,
@@ -31,7 +30,6 @@ const createMeeting = async (req, res) => {
       );
     }
 
-    newMeeting.participants.push(newMeeting.owner);
     const meeting = new Meeting(newMeeting);
     meeting.save();
     return response(res, StatusCodes.OK, true, { meeting }, null);
@@ -58,13 +56,25 @@ const getMeetings = async (req, res) => {
     }
 
     const participant = query.participant;
+    const owner = query.owner;
 
     if (participant) {
       query.participants = { $in: [participant] };
       delete query.participant;
     }
 
-    const meetings = await Meeting.find(query);
+    if (owner) {
+      query["$or"] = [{ participants: { $in: [participant] } }, { owner }];
+      delete query.owner;
+      delete query.participants;
+    }
+
+    const meetings = await Meeting.find(query).populate({
+      path: "owner",
+      model: "user",
+      select: "_id fullName phone birthday",
+    });
+
     return response(res, StatusCodes.OK, true, { meetings }, null);
   } catch (error) {
     console.error("Error getting meetings:", error);
@@ -87,16 +97,39 @@ const getMeeting = async (req, res) => {
 // UPDATE
 const updateMeeting = async (req, res) => {
   try {
-    const id = req.params.id;
-    const newData = req.body;
-    const updatedMeeting = await Meeting.findByIdAndUpdate(id, newData, {
+    const newMeeting = req.body;
+    const id = newMeeting._id;
+
+    // code Validate dubplicate meeting in timeline
+    const meetings = await Meeting.find({
+      _id: { $ne: id },
+      room: newMeeting.room,
+      startDate: { $lte: newMeeting.endDate },
+      endDate: { $gte: newMeeting.startDate },
+    });
+
+    if (meetings.length > 0) {
+      return response(
+        res,
+        StatusCodes.BAD_REQUEST,
+        false,
+        null,
+        "Trùng lịch họp với lịch họp khác"
+      );
+    }
+
+    const updatedMeeting = await Meeting.findByIdAndUpdate(id, newMeeting, {
       new: true,
     });
-    console.log("Updated meeting:", updatedMeeting);
-    return updatedMeeting;
+    return response(
+      res,
+      StatusCodes.OK,
+      true,
+      { meeting: updatedMeeting },
+      null
+    );
   } catch (error) {
-    console.error("Error updating meeting:", error);
-    throw error;
+    return response(res, StatusCodes.BAD_REQUEST, true, { meeting: {} }, null);
   }
 };
 
@@ -106,10 +139,16 @@ const deleteMeeting = async (req, res) => {
     const id = req.params.id;
     const deletedMeeting = await Meeting.findByIdAndDelete(id);
     console.log("Deleted meeting:", deletedMeeting);
-    return deletedMeeting;
+    return response(
+      res,
+      StatusCodes.OK,
+      true,
+      { meeting: deletedMeeting },
+      null
+    );
   } catch (error) {
     console.error("Error deleting meeting:", error);
-    throw error;
+    return response(res, StatusCodes.BAD_REQUEST, true, { meeting: {} }, null);
   }
 };
 

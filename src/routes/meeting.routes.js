@@ -7,5 +7,5 @@ router.post("/list", meetingController.getMeetings);
 router.get("/:id", meetingController.getMeeting);
 router.post("/", meetingController.createMeeting);
 router.put("/", meetingController.updateMeeting);
-router.delete("/", meetingController.deleteMeeting);
+router.delete("/:id", meetingController.deleteMeeting);
 module.exports = router;
