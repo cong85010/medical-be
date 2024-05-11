@@ -29,6 +29,8 @@ const medicalRecordRoute = require("./src/routes/medicalRecord.routes");
 const orderRoute = require("./src/routes/order.routes");
 const meetingRoute = require("./src/routes/meeting.routes");
 const statisticRoute = require("./src/routes/statistic.routes");
+const chatRoutes = require("./src/routes/chat.routes");
+const conversationRoutes = require("./src/routes/conversation.routes");
 
 app.use("/user", userRoute);
 app.use("/file", fileRoute);
@@ -39,13 +41,57 @@ app.use("/medical-record", medicalRecordRoute);
 app.use("/order", orderRoute);
 app.use("/meeting", meetingRoute);
 app.use("/statistic", statisticRoute);
+app.use("/chat", chatRoutes);
+app.use("/conversation", conversationRoutes);
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "/src/view/serverRunning.html"));
 });
 
-var port = process.env.PORT || 5000;
+const port = 5000;
+const portSocket = 3000;
+const { createServer } = require("http");
+const { Server } = require("socket.io");
+const { createChat } = require("./src/controllers/chat/chat.controller");
 
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+  cors: {
+    origin: "*",
+  },
+});
+
+io.on("connection", (socket) => {
+  console.log("A user connected");
+
+  socket.on("disconnect", () => {
+    console.log("User disconnected");
+  });
+
+  socket.on("newConversation", (conversation) => {
+    console.log("newConversation");
+    io.emit("newConversation", conversation);
+  });
+
+  socket.on("message", async (data) => {
+    const { roomId, message } = data;
+    console.log("Message", {
+      roomId,
+      message,
+    });
+
+    const newChat = await createChat(message);
+    // Handle incoming chat messages
+    io.to(roomId).emit("message", newChat); // Broadcast the message to all connected clients
+  });
+
+  socket.on("joinRoom", (roomId) => {
+    console.log("roomId", roomId);
+    socket.join(roomId);
+  });
+});
+
+httpServer.listen(portSocket);
 app.listen(port, () => {
   console.log("Server is Running on " + port);
 });
