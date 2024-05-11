@@ -1,6 +1,7 @@
 const { StatusCodes } = require("http-status-codes");
 const Conversation = require("../../models/Conversation.model");
 const { response } = require("../../utils/response");
+const dayjs = require("dayjs");
 
 // Create (Insert) a new conversation
 exports.createConversation = async (req, res) => {
@@ -76,32 +77,25 @@ exports.getConversationByUserid = async (req, res) => {
 };
 
 // Update a conversation by ID
-exports.updateConversation = async (req, res) => {
+exports.updateConversation = async (id) => {
   try {
-    const { name, participants, lastMessage } = req.body;
-    const updatedConversation = await Conversation.findByIdAndUpdate(
-      req.params.id,
-      { name, participants, lastMessage, updatedAt: Date.now() },
-      { new: true }
+    const conversation = await Conversation.findByIdAndUpdate(
+      id,
+      {
+        updatedAt: dayjs().toISOString(),
+      },
+      {
+        new: true,
+      }
     );
-    if (!updatedConversation) {
-      return res.status(404).json({ error: "Conversation not found" });
+    console.log('====================================');
+    console.log(conversation);
+    console.log('====================================');
+    if (!conversation) {
+      return null;
     }
-    return response(
-      res,
-      StatusCodes.ACCEPTED,
-      true,
-      { conversation: updatedConversation },
-      null
-    );
   } catch (error) {
-    return response(
-      res,
-      StatusCodes.BAD_REQUEST,
-      true,
-      { conversation: {} },
-      null
-    );
+    return null;
   }
 };
 

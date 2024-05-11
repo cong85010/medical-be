@@ -1,6 +1,7 @@
 const { StatusCodes } = require("http-status-codes");
 const Chat = require("../../models/Chat.model");
 const { response } = require("../../utils/response");
+const { updateConversation } = require("../conversation/conversation.controller");
 
 // Create (Insert) a new chat
 exports.createChat = async (message) => {
@@ -9,6 +10,7 @@ exports.createChat = async (message) => {
     const newChat = new Chat(message);
 
     const chat = await newChat.save();
+    updateConversation(message.conversationId, message);
     return chat;
   } catch (error) {
     console.log("error", error);
