@@ -75,7 +75,7 @@ const createUser = async (req, res) => {
 };
 
 const createPatient = async (req, res) => {
-  const { fullName, birthday, phone, address, note } = req.body;
+  const { fullName, birthday, phone, address, note, gender } = req.body;
   const userType = "user";
 
   const password = PASSWORD_DEFAULT;
@@ -123,6 +123,7 @@ const createPatient = async (req, res) => {
       fullName,
       address,
       note,
+      gender,
     });
 
     if (!user) {
@@ -222,17 +223,14 @@ const getUsers = async (req, res) => {
       .skip(skip ? skip : null);
 
     if (!users || users.length === 0) {
-      return response(
-        res,
-        StatusCodes.ACCEPTED,
-        false,
-        { total: 0, users: [] },
-      );
+      return response(res, StatusCodes.ACCEPTED, false, {
+        total: 0,
+        users: [],
+      });
     }
 
     return response(res, StatusCodes.OK, true, { total, users }, null);
   } catch (error) {
-
     return response(
       res,
       StatusCodes.INTERNAL_SERVER_ERROR,

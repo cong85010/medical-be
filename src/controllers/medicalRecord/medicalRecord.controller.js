@@ -4,6 +4,8 @@ const { StatusCodes } = require("http-status-codes");
 const MedicalRecord = require("../../models/MedicalRecord.model");
 const { response } = require("../../utils/response");
 const { Appointment } = require("../../models/Appoinment.model");
+const dayjs = require("dayjs");
+const { formatedDateTimeISO, FORMAT_DATE } = require("../../utils/constants");
 
 // Define your controller functions
 const createMedicalRecord = async (req, res) => {
@@ -83,6 +85,19 @@ const getListMedicalRecord = async (req, res) => {
   try {
     const query = req.body;
     const searchKey = query.searchKey || "";
+
+    if (query.date) {
+      query.updatedAt = {
+        $gte: formatedDateTimeISO(dayjs(query.date, FORMAT_DATE).startOf("day")),
+        $lt: formatedDateTimeISO(dayjs(query.date, FORMAT_DATE).endOf("day")),
+      };
+
+      delete query.date;
+    }
+
+    console.log("====================================");
+    console.log(query);
+    console.log("====================================");
 
     const medicalRecords = await MedicalRecord.find(query)
       .populate({

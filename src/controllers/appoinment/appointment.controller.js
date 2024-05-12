@@ -142,7 +142,7 @@ const getAppointments = async (req, res) => {
         model: "user",
         select: "_id fullName phone",
       })
-      .sort(sorted ? renderSort(sorted) : { updatedAt: -1, time: 1 })
+      .sort(sorted ? renderSort(sorted) : { date: -1 })
       .exec();
 
     return response(

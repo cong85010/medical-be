@@ -79,6 +79,7 @@ const updateMedicine = async (req, res) => {
     if (medicineExists) {
       // Update existing medicine in the database
 
+      medicineExists.name = name;
       medicineExists.note = note;
       medicineExists.usage = usage;
       medicineExists.price = price;
@@ -133,5 +134,5 @@ module.exports = {
   getMedicineById,
   createMedicine,
   updateMedicine,
-  deleteMedicine
+  deleteMedicine,
 };

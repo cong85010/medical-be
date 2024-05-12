@@ -5,8 +5,11 @@ const MAX_HOUR_DAY = 16;
 
 const generateTimeSlots = (date) => {
   const timeSlots = [];
-  const currentHour = dayjs().hour();
-  const currentMinute = dayjs().minute();
+
+  const currentTime = dayjs().add(30, "minute");
+  const currentHour = currentTime.hour();
+  const currentMinute = currentTime.minute();
+  // add 30 minutes to current time
 
   for (let hour = MIN_HOUR_DAY; hour <= MAX_HOUR_DAY; hour++) {
     if (hour === 12) continue;
@@ -68,7 +71,7 @@ const STATUS_BOOKING_STR = {
 const STATUS_MEDICAL = {
   examined: "examined",
   medicined: "medicined",
-}
+};
 
 const FORMAT_DATE_TIME = "DD/MM/YYYY HH:mm";
 
