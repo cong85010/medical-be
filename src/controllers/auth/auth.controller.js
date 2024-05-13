@@ -204,7 +204,7 @@ const changePassword = async (req, res) => {
         StatusCodes.NOT_ACCEPTABLE,
         false,
         {},
-        "Incorrect Password"
+        "Mật khẩu cũ không chính xác"
       );
     }
 
