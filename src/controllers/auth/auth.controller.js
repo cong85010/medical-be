@@ -43,7 +43,7 @@ const register = async (req, res) => {
       );
     }
 
-    return response(res, StatusCodes.ACCEPTED, true, { user, token}, null);
+    return response(res, StatusCodes.ACCEPTED, true, { user, token }, null);
   } catch (error) {
     return response(
       res,
@@ -88,7 +88,13 @@ const login = async (req, res) => {
       if (user.activeStatus) {
         const token = await createToken(user);
         if (token) {
-            return response(res, StatusCodes.ACCEPTED, true, { user, token}, null);
+          return response(
+            res,
+            StatusCodes.ACCEPTED,
+            true,
+            { user, token },
+            null
+          );
         }
 
         return response(
@@ -104,7 +110,7 @@ const login = async (req, res) => {
           StatusCodes.NOT_ACCEPTABLE,
           false,
           {},
-          "Account is not active"
+          "Tài khoản đã bị khóa"
         );
       }
     } else {
@@ -113,7 +119,7 @@ const login = async (req, res) => {
         StatusCodes.NOT_ACCEPTABLE,
         false,
         {},
-        "Incorrect Password!"
+        "Mật khẩu không chính xác"
       );
     }
   } catch (error) {
@@ -137,7 +143,7 @@ const reAuth = async (req, res) => {
 
   try {
     const result = await verifyToken(token);
-    
+
     if (result) {
       const user = await User.findById(result._id);
 
@@ -154,7 +160,13 @@ const reAuth = async (req, res) => {
       const newToken = await createToken(user);
 
       if (newToken) {
-        return response(res, StatusCodes.OK, true, { user, token: newToken }, null);
+        return response(
+          res,
+          StatusCodes.OK,
+          true,
+          { user, token: newToken },
+          null
+        );
       }
     } else {
       return response(
@@ -176,8 +188,72 @@ const reAuth = async (req, res) => {
   }
 };
 
+const changePassword = async (req, res) => {
+  try {
+    const { oldPassword, password: newPassword, userId } = req.body;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return response(res, StatusCodes.NOT_FOUND, false, {}, "User not found");
+    }
+
+    const matched = await compare(oldPassword, user.password);
+    if (!matched) {
+      return response(
+        res,
+        StatusCodes.NOT_ACCEPTABLE,
+        false,
+        {},
+        "Incorrect Password"
+      );
+    }
+
+    const hashedPassword = await securePassword(newPassword);
+
+    console.log(hashedPassword);
+    console.log("====================================");
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { password: hashedPassword },
+      { new: true }
+    );
+    if (!updatedUser) {
+      return response(
+        res,
+        StatusCodes.BAD_REQUEST,
+        false,
+        {},
+        "Could not update password"
+      );
+    }
+
+    console.log("====================================");
+    console.log(updatedUser);
+    console.log("====================================");
+    return response(
+      res,
+      StatusCodes.ACCEPTED,
+      true,
+      { user: updatedUser },
+      null
+    );
+  } catch (error) {
+    console.log("====================================");
+    console.log(error);
+    console.log("====================================");
+    return response(
+      res,
+      StatusCodes.INTERNAL_SERVER_ERROR,
+      false,
+      {},
+      error.message
+    );
+  }
+};
+
 module.exports = {
   register,
   login,
   reAuth,
+  changePassword,
 };

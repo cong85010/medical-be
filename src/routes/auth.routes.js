@@ -3,6 +3,7 @@ const {
  login,
  reAuth,
  register,
+ changePassword
 } = require("../controllers/auth/auth.controller");
 const { authValidation } = require("../controllers/auth/auth.validator");
 
@@ -19,4 +20,5 @@ router.post("/register", authValidation, register);
 //re-auth
 router.post("/reauth", reAuth);
 
+router.post("/change-password", changePassword);
 module.exports = router;
