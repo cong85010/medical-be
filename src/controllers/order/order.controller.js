@@ -15,7 +15,28 @@ async function createOrder(req, res) {
     const orderData = req.body;
     const { medicines } = orderData;
     if (!medicines || medicines.length === 0) {
-      throw new Error("Order must have at least one medicine");
+      throw new Error("Không có thuốc trong đơn hàng");
+    }
+
+    // descrease medicine quantity
+    for (let i = 0; i < medicines.length; i++) {
+      const medicineId = medicines[i]._id;
+      const quantity = medicines[i].quantity;
+      const medicine = await Medicine.findById(medicineId);
+      if (medicine.quantity < quantity) {
+        return response(
+          res,
+          StatusCodes.BAD_REQUEST,
+          true,
+          { order: null },
+          `Thuốc: "${medicine.name}" không đủ số lượng | Số lượng còn lại: ${medicine.quantity}`
+        );
+      }
+      await Medicine.findByIdAndUpdate(
+        medicineId,
+        { quantity: medicine.quantity - quantity },
+        { new: true }
+      );
     }
 
     const orderNumber = `DH-${Date.now()}`;
@@ -37,7 +58,7 @@ async function createOrder(req, res) {
     console.log(error);
     console.log("====================================");
     // Handle any errors
-    return response(res, StatusCodes.BAD_REQUEST, true, { order: null }, null);
+    return response(res, StatusCodes.BAD_REQUEST, true, { order: null }, "Lỗi tạo đơn hàng");
   }
 }
 

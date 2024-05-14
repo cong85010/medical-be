@@ -54,6 +54,7 @@ const getStatistic = async (req, res) => {
             $gte: dayjs(startDate).startOf("day").toDate(),
             $lte: dayjs(endDate).endOf("day").toDate(),
           },
+          userType: "user",
         },
       },
       {

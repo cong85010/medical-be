@@ -3,6 +3,7 @@ const { verify } = require("jsonwebtoken");
 const { User } = require("../models/User.model");
 const { config } = require("./config");
 const { response } = require("./response");
+const { TYPE_EMPLOYEE } = require("./constants");
 
 //verify token of user request
 const verifyToken = async (token) => {
@@ -71,7 +72,7 @@ const isAdmin = async (req, res, next) => {
         req.headers.authorization.split("Bearer ")[1]
       );
 
-      if (user && user.userType === "admin") {
+      if (user && user.userType === TYPE_EMPLOYEE.admin) {
         req.user = user;
         next();
       } else {
