@@ -1,3 +1,6 @@
+## DONATE FOR ME
+## MOMO: 0368795645
+
 ## Start Project
 Ready:
 - MongoDB ( create DB: copy URL string to config DB )
