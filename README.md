@@ -10,3 +10,6 @@ Ready:
 2: npm creataAdmin ( create a user admin for login. Account: admin@gmail.com/123456 ) <br />
 3: npm run dev <br />
 
+## Auth: 
+- anhdangcode.com
+- Phan Thành Công
