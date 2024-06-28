@@ -10,7 +10,7 @@ Ready:
 
 ## Start 
 1: npm install <br />
-2: npm creataAdmin ( create a user admin for login. Account: admin@gmail.com/123456 ) <br />
+2: npm createAdmin ( create a user admin for login. Account: admin@gmail.com/123456 ) <br />
 3: npm run dev <br />
 
 ## Auth: 
